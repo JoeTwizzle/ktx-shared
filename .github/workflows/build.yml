@@ -41,14 +41,18 @@ jobs:
           sudo apt update
           sudo apt install -y cmake ninja-build
 
-      - name: Configure libktx (Shared Only)
+      - name: Configure libktx
         run: >
-          cmake -S KTX-Software/lib -B build
+          cmake -S KTX-Software -B build
           -DCMAKE_BUILD_TYPE=Release
           -DBUILD_SHARED_LIBS=ON
+          -DKTX_FEATURE_DOC=OFF
+          -DKTX_FEATURE_TESTS=OFF
+          -DKTX_FEATURE_TOOLS=OFF
           -DLIBKTX_VERSION_FULL=OFF
           -DLIBKTX_VERSION_READ_ONLY=ON
           ${{ runner.os == 'Windows' && format('-A {0}', matrix.cmake_arch) || '' }}
+
 
       - name: Build
         run: cmake --build build --config Release
