@@ -33,7 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: recursive   # IMPORTANT for KTX-Software
+          submodules: recursive
 
       - name: Install dependencies (Linux)
         if: runner.os == 'Linux'
@@ -49,8 +49,6 @@ jobs:
           -DKTX_FEATURE_DOC=OFF
           -DKTX_FEATURE_TESTS=OFF
           -DKTX_FEATURE_TOOLS=OFF
-          -DLIBKTX_VERSION_FULL=OFF
-          -DLIBKTX_VERSION_READ_ONLY=ON
           ${{ runner.os == 'Windows' && format('-A {0}', matrix.cmake_arch) || '' }}
 
 
