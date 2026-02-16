@@ -1,0 +1,63 @@
+name: Build libktx Shared Library
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            arch: x86
+            cmake_arch: Win32
+          - os: windows-latest
+            arch: x64
+            cmake_arch: x64          
+          - os: windows-11-arm
+            arch: arm64
+            cmake_arch: arm64
+          - os: ubuntu-latest
+            arch: x64
+          - os: ubuntu-24.04-arm
+            arch: arm64
+          - os: macos-15-intel
+            arch: x64
+          - os: macos-latest
+            arch: arm64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive   # IMPORTANT for KTX-Software
+
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt update
+          sudo apt install -y cmake ninja-build
+
+      - name: Configure libktx (Shared Only)
+        run: >
+          cmake -S KTX-Software/lib -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DBUILD_SHARED_LIBS=ON
+          -DLIBKTX_VERSION_FULL=OFF
+          -DLIBKTX_VERSION_READ_ONLY=ON
+          ${{ runner.os == 'Windows' && format('-A {0}', matrix.cmake_arch) || '' }}
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libktx-${{ runner.os }}-${{ matrix.arch }}
+          path: |
+            build/**/*.dll
+            build/**/*.so
+            build/**/*.dylib
