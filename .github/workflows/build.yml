@@ -46,15 +46,17 @@ jobs:
           sudo apt install -y cmake ninja-build
 
       - name: Configure libktx
-        run: >
+      run: >
           cmake -S KTX-Software -B build
           -DCMAKE_BUILD_TYPE=Release
           -DBUILD_SHARED_LIBS=ON
           -DKTX_FEATURE_DOC=OFF
           -DKTX_FEATURE_TESTS=OFF
           -DKTX_FEATURE_TOOLS=OFF
-          ${{ runner.os == 'Windows' && format('-A {0}', matrix.cmake_arch) || '' }}
           ${{ runner.os == 'macOS' && format('-DCMAKE_OSX_ARCHITECTURES={0}', matrix.osx_arch) || '' }}
+          ${{ runner.os == 'macOS' && matrix.osx_arch == 'x86_64' && '-DCMAKE_C_FLAGS=-march=haswell -DCMAKE_CXX_FLAGS=-march=haswell' || '' }}
+          ${{ runner.os == 'Windows' && format('-A {0}', matrix.cmake_arch) || '' }}
+
 
       - name: Build
         run: cmake --build build --config Release
