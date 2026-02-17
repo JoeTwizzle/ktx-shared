@@ -20,7 +20,6 @@ jobs:
             arch: x64
           - os: ubuntu-24.04-arm
             arch: arm64
-          # macOS builds done on ARM runner only
           - os: macos-latest
             arch: arm64
             osx_arch: arm64
@@ -42,7 +41,7 @@ jobs:
           sudo apt install -y cmake ninja-build
 
       - name: Configure libktx
-      run: >
+        run: >
           cmake -S KTX-Software -B build
           -DCMAKE_BUILD_TYPE=Release
           -DBUILD_SHARED_LIBS=ON
